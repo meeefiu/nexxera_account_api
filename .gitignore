@@ -1,0 +1,3 @@
+venv/
+nexxera_account_api/db.sqlite3
+*.pyc
