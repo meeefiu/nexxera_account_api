@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.db import models
 
 # Create your models here.
@@ -10,12 +11,14 @@ class Account(models.Model):
 
 
 class Transaction(models.Model):
+    DEBIT = 'DEBIT'
+    CREDIT = 'CREDIT'
     TRANSACTION_TYPES = [
-        ('INCOME', 'crédito'),
-        ('PAYMENT', 'débito')
+        (CREDIT, 'crédito'),
+        (DEBIT, 'débito')
     ]
-    value = models.DecimalField(default=0, max_digits=5, decimal_places=2)
+    value = models.DecimalField(max_digits=5, decimal_places=2)
     operation = models.CharField(max_length=10, choices=TRANSACTION_TYPES)
-    description = models.CharField(max_length=100, null=True)
+    description = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     account = models.ForeignKey(Account, on_delete=models.RESTRICT)
