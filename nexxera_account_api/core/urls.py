@@ -1,7 +1,7 @@
-from rest_framework import routers
-from core.views import AccountView
+from rest_framework.urls import path
+from core import views
 
-router = routers.DefaultRouter()
-router.register('accounts', AccountView)
-
-urlpatterns = router.urls
+urlpatterns = [
+    path('create-account/', views.create_account),
+    path('list-account/', views.list_accounts),
+]
