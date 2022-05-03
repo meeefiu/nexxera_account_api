@@ -60,7 +60,8 @@ def make_withdraw(account_number, value, description):
 def validate_transaction_value(value):
     invalid_value = value <= 0
     if invalid_value:
-        raise InvalidTransactionValueException()
+        raise InvalidTransactionValueException(
+            'The number must be a number grater then 0')
 
 
 def get_account_by_number_or_fail(number):

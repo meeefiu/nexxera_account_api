@@ -9,5 +9,5 @@ class InsufficientAccountBalanceException(Exception):
 
 
 class InvalidTransactionValueException(Exception):
-    def __init__(self):
-        super().__init__('The number must be a number grater then 0')
+    def __init__(self, message):
+        super().__init__(message)
