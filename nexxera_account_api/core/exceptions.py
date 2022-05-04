@@ -11,3 +11,9 @@ class InsufficientAccountBalanceException(Exception):
 class InvalidTransactionValueException(Exception):
     def __init__(self, message):
         super().__init__(message)
+
+
+class AccountNumberAlreadyExists(Exception):
+    def __init__(self, number):
+        self.message = f'The {number} account already exists'
+        super().__init__(self.message)

@@ -1,7 +1,6 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from core.models import Account
-from core import services
 from core.serializers import AccountSerializer
 
 
@@ -14,10 +13,7 @@ def list_accounts(request):
 
 @api_view(['POST'])
 def create_account(request):
-    account_attributes = {
-        'holder_name': request.data.get('holder_name'),
-        'number': request.data.get('number')
-    }
-    account = services.create_account(**account_attributes)
-    serializer = AccountSerializer(account)
-    return Response(serializer.data)
+    serializer = AccountSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    return Response(serializer.data, 201)
