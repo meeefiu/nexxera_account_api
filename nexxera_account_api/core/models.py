@@ -11,8 +11,8 @@ class Account(models.Model):
 
 
 class Transaction(models.Model):
-    DEBIT = 'DEBIT'
-    CREDIT = 'CREDIT'
+    DEBIT = 'debit'
+    CREDIT = 'credit'
     TRANSACTION_TYPES = [
         (CREDIT, 'crédito'),
         (DEBIT, 'débito')
