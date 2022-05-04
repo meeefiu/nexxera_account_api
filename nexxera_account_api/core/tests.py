@@ -5,6 +5,7 @@ from core.services import create_account, get_account_balances_between_period, m
 from core.models import Account, Transaction
 from core.exceptions import (
     AccountNotExistsException,
+    AccountNumberAlreadyExists,
     InsufficientAccountBalanceException,
     InvalidTransactionValueException
 )
@@ -18,6 +19,15 @@ class AccountServiceTest(TestCase):
         '''
         account = create_account('Test Holder', number='00001')
         self.assertEqual(account.balance, 0)
+
+    def test_create_an_account_with_number_that_already_exists(self):
+        '''
+            Should try to create an account with a number that already exists
+            and an exception must be raised
+        '''
+        create_account('Test Holder', number='00001')
+        with self.assertRaises(AccountNumberAlreadyExists):
+            create_account('Test Holder', number='00001')
 
 
 class TransactionServiceTest(TestCase):
@@ -70,7 +80,7 @@ class TransactionServiceTest(TestCase):
 
     def test_try_to_make_withdraw_with_an_invalid_value(self):
         '''
-            Should make a withdraw with an invalid value and and exception must be raised
+            Should make a withdraw with an invalid value and an exception must be raised
         '''
         account = Account(holder_name='Test Holder',
                           balance=100, number='11111')

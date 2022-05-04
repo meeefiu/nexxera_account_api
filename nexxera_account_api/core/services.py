@@ -1,16 +1,21 @@
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import IntegrityError
 from django.db.models import Sum
 from django.utils import timezone
 from datetime import datetime
 from core.models import Transaction, Account
 from core.exceptions import (
     AccountNotExistsException,
+    AccountNumberAlreadyExists,
     InsufficientAccountBalanceException,
     InvalidTransactionValueException
 )
 
 
 def create_account(holder_name, number):
+    account_number_exists = Account.objects.filter(number=number).exists()
+    if account_number_exists:
+        raise AccountNumberAlreadyExists(number)
     account = Account(holder_name=holder_name, number=number)
     account.save()
     return account
