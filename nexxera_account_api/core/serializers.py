@@ -1,6 +1,8 @@
+from rest_framework.exceptions import ValidationError
 from rest_framework import serializers
 from core.models import Account, Transaction
 from core.services import create_account, make_deposit, make_withdraw
+from core.exceptions import AccountNotExistsException, InsufficientAccountBalanceException, InvalidTransactionValueException
 
 
 class AccountSerializer(serializers.ModelSerializer):
@@ -26,7 +28,17 @@ class TransactionSerializer(serializers.ModelSerializer):
             'value': self.validated_data['value'],
             'description': self.validated_data['description'],
         }
-        if self.validated_data['operation'] == Transaction.DEBIT:
-            return make_withdraw(**transaction_attributes)
-        if self.validated_data['operation'] == Transaction.CREDIT:
-            return make_deposit(**transaction_attributes)
+
+        operation_handlers = {
+            Transaction.DEBIT: make_withdraw,
+            Transaction.CREDIT: make_deposit
+        }
+
+        operation = self.validated_data['operation']
+
+        try:
+            return operation_handlers[operation](**transaction_attributes)
+        except (InvalidTransactionValueException, InsufficientAccountBalanceException) as e:
+            raise ValidationError({'value': e.message})
+        except AccountNotExistsException as e:
+            raise ValidationError({'account_number': e.message})

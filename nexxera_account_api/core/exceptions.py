@@ -1,15 +1,18 @@
 class AccountNotExistsException(Exception):
     def __init__(self, number):
-        super().__init__(f'Account with number {number} not exists')
+        self.message = f'Account with number {number} does not exists'
+        super().__init__(self.message)
 
 
 class InsufficientAccountBalanceException(Exception):
     def __init__(self, number):
-        super().__init__(f'Insufficient balance for account {number}')
+        self.message = f'Insufficient balance for account {number}'
+        super().__init__(self.message)
 
 
 class InvalidTransactionValueException(Exception):
     def __init__(self, message):
+        self.message = message
         super().__init__(message)
 
 

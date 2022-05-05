@@ -66,7 +66,7 @@ def validate_transaction_value(value):
     invalid_value = value <= 0
     if invalid_value:
         raise InvalidTransactionValueException(
-            'The number must be a number grater then 0')
+            'The value must be grater then 0')
 
 
 def get_account_by_number_or_fail(number):
@@ -76,9 +76,15 @@ def get_account_by_number_or_fail(number):
         raise AccountNotExistsException(number)
 
 
-def get_account_extract_between_period(account_number, start, end):
-    return Transaction.objects.filter(account__number=account_number,
-                                      created_at__gte=start, created_at__lte=end)
+def get_account_extract_between_period(account_number, start, end, operation=None):
+    filter_fields = {
+        'account__number': account_number,
+        'created_at__gte': start,
+        'created_at__lte': end
+    }
+    if operation:
+        filter_fields.update({'operation': operation})
+    return Transaction.objects.filter(**filter_fields)
 
 
 def get_account_balances_between_period(account_number, start, end):
