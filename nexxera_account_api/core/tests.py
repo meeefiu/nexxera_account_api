@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.utils import timezone
 from datetime import datetime
-from core.services import create_account, get_account_balances_between_period, make_deposit, make_withdraw
+from core.services import create_account, get_account_balances_between_period, get_account_extract_between_period, make_deposit, make_withdraw
 from core.models import Account, Transaction
 from core.exceptions import (
     AccountNotExistsException,
@@ -112,9 +112,9 @@ class TransactionServiceTest(TestCase):
         with self.assertRaises(AccountNotExistsException):
             make_deposit('12345', 10, 'Withdraw of 10')
 
-    def test_get_account_balance_in_the_start_and_in_the_end_of_a_period(self):
+    def test_get_account_balance_and_extract_in_the_start_and_in_the_end_of_a_period(self):
         '''
-            Should validate if the balance in the start and in the end of a period is valid
+            Should validate if the balance in the start and in the end of a period is valid 
         '''
         account = Account(holder_name='Test Holder', number='11111')
         account.save()
@@ -140,10 +140,25 @@ class TransactionServiceTest(TestCase):
         account.balance -= 10
         account.save()
 
-        balance = get_account_balances_between_period('11111', datetime(
-            2022, 1, 2, 23, 59, 59, tzinfo=timezone.utc), datetime(2022, 1, 3, 23, 59, 59, tzinfo=timezone.utc))
+        start_date = datetime(2022, 1, 2, 0, 0, 0, tzinfo=timezone.utc)
+        end_date = datetime(2022, 1, 9, 23, 59, 59, tzinfo=timezone.utc)
+
+        balance = get_account_balances_between_period(
+            '11111', start_date, end_date)
         expected = {
             'balance_start': 20,
-            'balance_end': 30
+            'balance_end': 70
         }
         self.assertEqual(expected, balance)
+
+        extract_of_all_transactions = get_account_extract_between_period(
+            '11111', start_date, end_date)
+        self.assertEqual(len(extract_of_all_transactions), 5)
+
+        extract_of_debit_transactions = get_account_extract_between_period(
+            '11111', start_date, end_date, 'debit')
+        self.assertEqual(len(extract_of_debit_transactions), 2)
+
+        extract_of_credit_transactions = get_account_extract_between_period(
+            '11111', start_date, end_date, 'credit')
+        self.assertEqual(len(extract_of_credit_transactions), 3)
